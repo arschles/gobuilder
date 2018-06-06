@@ -1,0 +1,10 @@
+add("markdown", user.Markdown)
+add("date", user.CreatedAt)
+if user.Admin() {
+    add("password_hash", user.PasswordHash)
+}
+
+add("author", {
+    "name": user.Author.Name,
+    "email_address": user.Author.email_address
+})
