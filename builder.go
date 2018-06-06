@@ -36,6 +36,7 @@ func NewBuilder(dataName string, data interface{}) Builder {
 }
 
 func (b *builder) Execute() (string, error) {
+	// get script file
 	path, err := filepath.Abs(b.scriptName)
 	if err != nil {
 		return "", err
@@ -44,12 +45,19 @@ func (b *builder) Execute() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// create env and add funcs to it
+	ctx := newContext()
 	env := vm.NewEnv()
 	if err := env.Define(b.dataName, b.data); err != nil {
 		return "", err
 	}
+	if err := env.Define("add", ctx.add); err != nil {
+		return "", err
+	}
 
-	res, err := env.Execute(string(script))
+	// execute the script
+	_, err = env.Execute(string(script))
 	if err != nil {
 		switch t := err.(type) {
 		case *vm.Error:
@@ -60,9 +68,10 @@ func (b *builder) Execute() (string, error) {
 			return "", err
 		}
 	}
-	j, err := json.Marshal(res)
+
+	jsonBytes, err := json.Marshal(ctx)
 	if err != nil {
 		return "", err
 	}
-	return string(j), nil
+	return string(jsonBytes), nil
 }

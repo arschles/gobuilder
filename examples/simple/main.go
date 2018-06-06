@@ -9,8 +9,13 @@ import (
 )
 
 type user struct {
-	Markdown  string
-	CreatedAt time.Time
+	Name         string
+	EmailAddress string
+	Markdown     string
+	CreatedAt    time.Time
+	Admin        bool
+	PasswordHash string
+	Author       *user
 }
 
 func (u user) ToBuilder() gobuilder.Builder {
